@@ -59,7 +59,7 @@ for aa, file in enumerate(flist):
     #datum = datum.dropna()
     datum['TKE']=0.5*(datum['Ur']**2+datum['Ut']**2+datum['Ux']**2)
     datum['Theta']  = np.arctan(datum['Y']/datum['Z'])
-    coords = datum[['X','Theta']]
+    coords = datum[['X','Y','Z']]
     datum = datum.drop(columns=['TKE_2','PCWE_1','X','Y','Z','Theta'])
     gruppo2 = gruppo.create_group('slice_'+str(aa))
     dati = transformer.transform(datum)
@@ -83,7 +83,7 @@ for aa, file in enumerate(flist):
     #datum = datum.dropna()
     datum['TKE']=0.5*(datum['Ur']**2+datum['Ut']**2+datum['Ux']**2)
     datum['Theta']  = np.arctan(datum['Y']/datum['Z'])
-    coords = datum[['X','Theta']]
+    coords = datum[['X','Y','Z']]
     datum = datum.drop(columns=['TKE_2','PCWE_1','X','Y','Z','Theta'])
     gruppo2 = gruppo.create_group('slice_'+str(aa))
     dati = transformer.transform(datum)
