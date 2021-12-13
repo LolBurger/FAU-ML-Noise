@@ -14,6 +14,7 @@ from pyevtk.hl import pointsToVTK
 from scipy.spatial.distance import cdist
 
 
+
 #fileDir = r'C:\Users\lorenzo\Desktop\\'
 fileDir = r'C:\Users\Utente\Desktop\dataexp\\'
 #hffile = fileDir + 'totalData.h5'
