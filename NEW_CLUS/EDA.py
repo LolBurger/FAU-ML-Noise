@@ -15,7 +15,7 @@ from scipy.spatial.distance import cdist
 plt.rcParams["font.family"] = "Times New Roman"
 plt.rcParams.update({'font.size': 22})
 
-fileDir = r'C:\Users\Utente\Desktop\dataexp\\'
+fileDir = r'..\dataexp\\'
 hffile = fileDir +'totalData.h5'
 jj = 'slice_10'
 ldf = []

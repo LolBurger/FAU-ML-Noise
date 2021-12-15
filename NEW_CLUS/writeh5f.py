@@ -8,10 +8,10 @@ import pickle
 import os
 
 
-#slicename = ['-0.012P','0P','0.01P','0.021','hub','mid','tip']
+
 slicename = ['hub','mid','tip']
-fileDir = r'C:\Users\lorenzo\Desktop\\'
-fileDir = r'C:\Users\Utente\Desktop\dataexp\\'
+
+fileDir = r'..\..\dataexp\\'
 hffile = fileDir + 'totalData.h5'
 
 #change slicename index to get the correct slices

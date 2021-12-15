@@ -16,8 +16,8 @@ from scipy.spatial.distance import cdist
 
 trainS = 0   #1 se PCA 1 / 0 variabili tal quali
 
-#fileDir = r'C:\Users\lorenzo\Desktop\\'
-fileDir = r'C:\Users\Utente\Desktop\dataexp\\'
+
+fileDir = r'..\..\dataexp\\'
 #hffile = fileDir + 'totalData.h5'
 if trainS == 1:
     hffile = fileDir +'totalDataPCA.h5'
