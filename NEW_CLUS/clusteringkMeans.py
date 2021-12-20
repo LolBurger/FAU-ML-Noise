@@ -9,84 +9,51 @@ import shutil
 import os
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
-from sklearn.cluster import MiniBatchKMeans
+from sklearn.cluster import KMeans
 from pyevtk.hl import pointsToVTK
 from scipy.spatial.distance import cdist
 
 
+trainS = 0   #1 se PCA 1 / 0 variabili tal quali
 
-#fileDir = r'C:\Users\lorenzo\Desktop\\'
-fileDir = r'C:\Users\Utente\Desktop\dataexp\\'
+
+fileDir = r'C:\Users\Lorenzo\Desktop\dataexp\\'
 #hffile = fileDir + 'totalData.h5'
-hffile = fileDir +'totalDataPCA.h5'
-hffile = fileDir +'totalData.h5'
+if trainS == 1:
+    hffile = fileDir +'totalDataPCA.h5'
+else:
+    hffile = fileDir +'totalData.h5'
 
 
 
-distortions = []
-inertias = []
-mapping1 = {}
-mapping2 = {}
+eps = [4,6,8,10,14,18,20,40,60,80]
 
-
-NC = np.arange(2,61,1,dtype=int)
-NC = [18]
-#listT = ['slice_'+str(x) for x in range(118)]
 listT = ['slice_10']
+slices = ['hub', 'mid', 'tip']
+
+
 
 with h5py.File(hffile, 'r') as f:
-    for nc in  NC:
-        cluster = MiniBatchKMeans(n_clusters=nc, random_state=10, batch_size=8940)
-        dirs = 'RESULTS/nc_' + str(nc) + '/'
-        if not os.path.exists(dirs):
-            os.makedirs(dirs)
-        else:
-            shutil.rmtree(dirs)
-            os.makedirs(dirs)
-        #Here I train incrementally on the dataset
-        for jj in listT:
-            head = [key for key in f['mid'][jj].keys()]
-            df = pd.DataFrame(data=None, columns=head)
-            for c in df.columns:
-                df[c]=np.asarray(f['mid'][jj][c])
-            #train = df[['Score_1','Score_2','Score_3']]
-            train = df.drop(columns=['PCWE','X','Y','Z'])
-            cluster.fit(train)
-            distortions.append(sum(np.min(cdist(train, cluster.cluster_centers_,
-                                                'euclidean'), axis=1)) / train.shape[0])
-            inertias.append(cluster.inertia_)
+    for ss in slices:
+        emptyData = pd.DataFrame(data=None, columns=None)
+        for nc in eps:
 
-            mapping1[nc] = sum(np.min(cdist(train, cluster.cluster_centers_,
-                                           'euclidean'), axis=1)) / train.shape[0]
-            mapping2[nc] = cluster.inertia_
 
-        # Ora faccio la predizione
-        for jj in listT:
-            head = [key for key in f['mid'][jj].keys()]
-            df = pd.DataFrame(data=None, columns=head)
-            for c in df.columns:
-                df[c]=np.asarray(f['mid'][jj][c])
-            #train = df[['Score_1', 'Score_2', 'Score_3']]
-            train = df.drop(columns=['PCWE', 'X', 'Y', 'Z'])
-            df['label']=cluster.predict(train)
-            dictval = {col: df[col].values for col in df}
-            pointsToVTK(dirs+jj, df['X'].values, df['Y'].values, df['Z'].values,data=dictval)
+            cluster = KMeans(n_clusters=nc, random_state=2)
+            for jj in listT:
+                head = [key for key in f[ss][jj].keys()]
+                df = pd.DataFrame(data=None, columns=head)
+                for c in df.columns:
+                    df[c]=np.asarray(f[ss][jj][c])
+                train = df.drop(columns=['PCWE','X','Y','Z'])
 
-'''
-plt.figure()
-plt.plot(NC, distortions, 'bx-')
-plt.xlabel('Values of K')
-plt.ylabel('Distortion')
-plt.title('The Elbow Method using Distortion')
-plt.savefig('IMAGES/distortion_elbow_chart.png')
-plt.show()
+                dname = 'IDS_nc_'+str(nc)
+                print('Processing '+ss+' '+dname)
+                emptyData[dname]=cluster.fit_predict(train)
 
-plt.figure()
-plt.plot(NC, inertias, 'bx-')
-plt.xlabel('Values of K')
-plt.ylabel('Inertia')
-plt.savefig('IMAGES/inertia_elbow_chart.png')
-plt.show()
-'''
+        df = pd.concat([df[['PCWE','X','Y','Z']],emptyData],axis=1)
+        dictval = {col: df[col].values for col in df}
+        pointsToVTK('RESULTS/KMeans_PCA_'+str(trainS)+'_'+ss, df['X'].values, df['Y'].values, df['Z'].values,data=dictval)
+
 
 print('END')
